@@ -33,7 +33,7 @@ jobs:
         id: set_artifact
         run: |
           postfix="${{ matrix.version }}"
-          if [[ "${{ inputs.runner }}" == "ubuntu-latest" ]]; then
+          if grep -q "ubuntu" <<<"${{ inputs.runner }}"; then
             echo "artifact_name=ub-${postfix}" >> $GITHUB_OUTPUT
           else
             echo "artifact_name=mac-${postfix}" >> $GITHUB_OUTPUT
