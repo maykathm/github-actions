@@ -1,0 +1,29 @@
+name: build test
+
+on:
+  workflow_call:
+    inputs:
+      runner:
+        required: true
+        type: string
+
+jobs:
+  build:
+    runs-on: ${{ inputs.runner }}
+    strategy:
+      matrix:
+        version: ['test', 'prod']
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.23'
+
+      - name: Build
+        run: go build -o hello-world main.go
+
+      - name: Run
+        run: ./hello-world
