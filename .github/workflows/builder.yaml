@@ -26,4 +26,5 @@ jobs:
         run: go build -o hello-world main.go
 
       - name: Run
+        if: "endsWith(inputs.runner, 'os-latest')"
         run: ./hello-world
