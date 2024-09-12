@@ -28,3 +28,19 @@ jobs:
       - name: Run
         if: "endsWith(inputs.runner, 'os-latest')"
         run: ./hello-world
+
+      - name: Set artifact name
+        id: set_artifact
+        run: |
+          postfix="${{ matrix.version }}"
+          if [[ "${{ inputs.runner }}" == "ubuntu-latest" ]]; then
+            echo "artifact_name=ub-${postfix}" >> $GITHUB_OUTPUT
+          else
+            echo "artifact_name=mac-${postfix}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ steps.set_artifact.outputs.artifact_name }}
+          path: hello-world
