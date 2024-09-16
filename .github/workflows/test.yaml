@@ -10,3 +10,17 @@ jobs:
     strategy:
       matrix:
         runner: [ubuntu-latest, macos-latest]
+
+  run-things:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        cool-strings:
+          - string1
+          - [string2, string3, string4]
+    steps:
+      - name: String Test
+        run: |
+          echo "${{ toJSON(matrix.cool-strings) }}"
+          printf "%s" "${{ toJSON(matrix.cool-strings) }}"
+          grep -q "2" <<<"${{ toJSON(matrix.cool-strings) }}"
