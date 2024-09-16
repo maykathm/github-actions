@@ -20,6 +20,7 @@ jobs:
           - [string2, string3, string4]
     steps:
       - name: String Test
+        if: "endsWith(matrix.cool-strings, '1') && startsWith(matrix.cool-strings, 's')"
         run: |
           echo "${{ toJSON(matrix.cool-strings) }}"
           printf "%s" "${{ toJSON(matrix.cool-strings) }}"
