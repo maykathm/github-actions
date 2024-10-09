@@ -18,6 +18,12 @@ jobs:
         cool-strings:
           - string1
           - [string2, string3, string4]
+        extra-cool-strings:
+          - string5
+          - string6
+        exclude:
+          - cool-strings: [string2, string3, string4]
+            extra-cool-strings: string5
     steps:
       - name: String Test
         if: "endsWith(matrix.cool-strings, '1') && startsWith(matrix.cool-strings, 's')"
