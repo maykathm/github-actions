@@ -46,7 +46,6 @@ jobs:
         if: github.event_name == 'pull_request'
         run: |
           echo "PR number is ${{ github.event.number }}"
-          exit 1
 
       - name: Comment
         if: always() && github.event_name == 'pull_request'
