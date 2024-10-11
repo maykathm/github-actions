@@ -36,7 +36,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: String Test
-        if: "endsWith(matrix.cool-strings, '1') && startsWith(matrix.cool-strings, 's')"
+        if: "!endsWith(matrix.cool-strings, '1') || startsWith(matrix.cool-strings, 's')"
         run: |
           echo "${{ toJSON(matrix.cool-strings) }}"
           printf "%s" "${{ toJSON(matrix.cool-strings) }}"
