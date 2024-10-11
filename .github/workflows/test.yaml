@@ -17,6 +17,7 @@ jobs:
 
   run-things:
     runs-on: ubuntu-latest
+    permissions: write-all
     strategy:
       matrix:
         cool-strings:
@@ -46,5 +47,7 @@ jobs:
 
       - name: Comment
         if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh pr comment 1 --body "Test comment"
