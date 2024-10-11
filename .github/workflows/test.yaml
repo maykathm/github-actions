@@ -33,7 +33,7 @@ jobs:
             extra-cool-strings: string5
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: String Test
         if: "!endsWith(matrix.cool-strings, '1') || startsWith(matrix.cool-strings, 's')"
@@ -119,10 +119,18 @@ jobs:
 
           body="$(date)\n"
           body+="## Failures:\n"
-          body+="### Prepare:\n"
-          body+=$(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "preparing" ) .task' example.json | while read line; do echo "- $line\n"; done)
-          body+="### Executing:\n"
-          body+=$(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "executing" ) .task' example.json | while read line; do echo "- $line\n"; done)
+          if [[ $(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "preparing" )' example.json) ]]; then
+            body+="### Prepare:\n"
+            body+=$(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "preparing" ) .task' example.json | while read line; do echo "- $line\n"; done)
+          fi
+          if [[ $(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "executing" )' example.json) ]]; then
+            body+="### Executing:\n"
+            body+=$(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "executing" ) .task' example.json | while read line; do echo "- $line\n"; done)
+          fi
+          if [[ $(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "restoring" )' example.json) ]]; then
+            body+="### Restoring:\n"
+            body+=$(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "restoring" ) .task' example.json | while read line; do echo "- $line\n"; done)
+          fi
           if ! gh pr comment "${{ github.event.number }}" --body "$(echo -e $body)" --edit-last; then
             gh pr comment "${{ github.event.number }}" --body "$(echo -e $body)"
           fi
