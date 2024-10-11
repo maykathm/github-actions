@@ -53,10 +53,76 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           echo "$(gh pr view "${{ github.event.number }}" --comments)"
+
+          cat <<EOF > example.json
+          [{
+            "type": "info",
+            "date": "2024-10-11",
+            "time": "09:00:24",
+            "info_type": "Error",
+            "verb": "preparing",
+            "task": "google-core:ubuntu-core-22-64:tests/main/",
+            "extra": null,
+            "detail": {
+              "lines": [
+                "-----\n",
+                ".\n"
+              ]
+            }
+          },
+          {
+            "type": "info",
+            "date": "2024-10-11",
+            "time": "09:01:26",
+            "info_type": "Error",
+            "verb": "preparing",
+            "task": "google-core:ubuntu-core-22-64:tests/regression/",
+            "extra": null,
+            "detail": {
+              "lines": [
+                "-----\n",
+                ".\n"
+              ]
+            }
+          },
+          {
+            "type": "info",
+            "date": "2024-10-11",
+            "time": "09:01:58",
+            "info_type": "Error",
+            "verb": "preparing",
+            "task": "google-core:ubuntu-core-22-64:tests/core/",
+            "extra": null,
+            "detail": {
+              "lines": [
+                "-----\n",
+                ".\n"
+              ]
+            }
+          },
+          {
+            "type": "info",
+            "date": "2024-10-11",
+            "time": "12:54:02",
+            "info_type": "Error",
+            "verb": "executing",
+            "task": "qemu:ubuntu-24.04-64:tests/main/ack",
+            "extra": null,
+            "detail": {
+              "lines": [
+                "-----\n",
+                ".\n"
+              ]
+            }
+          }]
+          EOF
+
           body="$(date)\n"
           body+="## Failures:\n"
-          body+="- things\n"
-          body+="- more things\n"
+          body+="### Prepare:\n"
+          body+=$(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "preparing" ) .task' example.json | while read line; do echo "- $line\n"; done)
+          body+="### Executing:\n"
+          body+=$(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "executing" ) .task' example.json | while read line; do echo "- $line\n"; done)
           if ! gh pr comment "${{ github.event.number }}" --body "$(echo -e $body)" --edit-last; then
             gh pr comment "${{ github.event.number }}" --body "$(echo -e $body)"
           fi
