@@ -1,6 +1,10 @@
 name: test
 
-on: push
+on:
+  push:
+    branches: master
+  pull_request:
+    branches: master
 
 jobs:
   build:
@@ -31,3 +35,8 @@ jobs:
           echo "${{ toJSON(matrix.cool-strings) }}"
           printf "%s" "${{ toJSON(matrix.cool-strings) }}"
           grep -q "2" <<<"${{ toJSON(matrix.cool-strings) }}"
+
+      - name: Get PR number
+        if: github.event_name == 'pull_request'
+        run: |
+          echo "PR number is ${{ github.event.number }}"
