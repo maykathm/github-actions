@@ -53,6 +53,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          echo "$(gh pr view "${{ github.event.number }}" --comments)"
           body="$(date)\n"
           body+="## Failures:\n"
           body+="- things\n"
