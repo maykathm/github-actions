@@ -58,4 +58,6 @@ jobs:
           body+="## Failures:\n"
           body+="- things\n"
           body+="- more things\n"
-          gh pr comment "${{ github.event.number }}" --body "$body" --edit-last
+          if ! gh pr comment "${{ github.event.number }}" --body "$(echo -e $body)" --edit-last; then
+            gh pr comment "${{ github.event.number }}" --body "$(echo -e $body)"
+          fi
