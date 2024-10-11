@@ -45,10 +45,11 @@ jobs:
         if: github.event_name == 'pull_request'
         run: |
           echo "PR number is ${{ github.event.number }}"
+          exit 1
 
       - name: Comment
-        if: github.event_name == 'pull_request'
+        if: always() && github.event_name == 'pull_request'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh pr comment 1 --body "Test commentzzz even more" --edit-last
+          gh pr comment "${{ github.event.number }}" --body "$(date)" --edit-last
