@@ -53,4 +53,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh pr comment "${{ github.event.number }}" --body "$(date)" --edit-last
+          body="$(date)\n"
+          body+="## Failures:\n"
+          body+="- things\n"
+          body+="- more things\n"
+          gh pr comment "${{ github.event.number }}" --body "$body" --edit-last
