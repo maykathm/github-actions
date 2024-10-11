@@ -7,20 +7,20 @@ on:
     branches: master
 
 jobs:
-  build:
-    uses: ./.github/workflows/builder.yaml
-    with:
-      runner: ${{ matrix.runner }}
-    strategy:
-      matrix:
-        runner: [ubuntu-latest, macos-latest]
+  # build:
+  #   uses: ./.github/workflows/builder.yaml
+  #   with:
+  #     runner: ${{ matrix.runner }}
+  #   strategy:
+  #     matrix:
+  #       runner: [ubuntu-latest, macos-latest]
 
   run-things:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         cool-strings:
-          - string1
+          # - string1
           - [string2, string3, string4]
         extra-cool-strings:
           - string5
@@ -29,6 +29,9 @@ jobs:
           - cool-strings: [string2, string3, string4]
             extra-cool-strings: string5
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
       - name: String Test
         if: "endsWith(matrix.cool-strings, '1') && startsWith(matrix.cool-strings, 's')"
         run: |
@@ -40,3 +43,8 @@ jobs:
         if: github.event_name == 'pull_request'
         run: |
           echo "PR number is ${{ github.event.number }}"
+
+      - name: Comment
+        if: github.event_name == 'pull_request'
+        run: |
+          gh pr comment 1 --body "Test comment"
