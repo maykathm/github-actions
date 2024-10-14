@@ -8,13 +8,27 @@ on:
   workflow_dispatch:
 
 jobs:
-  # build:
-  #   uses: ./.github/workflows/builder.yaml
-  #   with:
-  #     runner: ${{ matrix.runner }}
-  #   strategy:
-  #     matrix:
-  #       runner: [ubuntu-latest, macos-latest]
+  do-things:
+    uses: ./.github/workflows/output-generator.yaml
+    with:
+      data: ${{ matrix.data }}
+    strategy:
+      matrix:
+        data:
+          - 1
+          - 2
+          - 3
+  
+  collect-things:
+    runs-on: ubuntu-latest
+    needs: do-things
+    steps:
+      - name: Echo collected output
+        run: |
+          for output in ${{ toJson(needs.do-things.outputs) }}; do 
+            echo "$output"
+          done
+
 
   run-things:
     runs-on: ubuntu-latest

@@ -1,0 +1,25 @@
+name: commenter
+
+on:
+  workflow_call:
+    inputs:
+      comment-id:
+        required: true
+        type: string
+
+jobs:
+  comment_failures:
+    runs-on: ubuntu-latest
+    permissions: 
+      pull-requests: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Comment
+        if: always() && github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          ghcomment="$(gh pr view "${{ github.event.number }}" --json "comments" | jq -r '.[].[] | select(.id=="${{ inputs.comment-id }}"))""
+          body="$(jq '.body' <<<$ghcomment)"
+
