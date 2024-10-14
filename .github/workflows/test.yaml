@@ -25,9 +25,7 @@ jobs:
     steps:
       - name: Echo collected output
         run: |
-          for output in ${{ toJson(needs.do-things.outputs) }}; do 
-            echo "$output"
-          done
+          echo "insert logic here"
 
 
   run-things:
