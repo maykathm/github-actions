@@ -16,11 +16,11 @@ jobs:
       - name: Generate Data
         id: gen_data
         run: |
-          echo -n "out=Data generated for ${{ inputs.data }}" > "${{ github.workspace }}/.data_${{ inputs.data }}"
+          echo -n "out=Data generated for ${{ inputs.data }}" > ".data_${{ inputs.data }}"
 
       - name: Save spread test results to cache
         if: always()
         uses: actions/cache/save@v4
         with:
-          path: "${{ github.workspace }}/.data_${{ inputs.data }}"
+          path: ".data_${{ inputs.data }}"
           key: "results-${{ github.run_id }}-${{ github.run_attempt }}"

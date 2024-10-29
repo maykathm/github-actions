@@ -27,7 +27,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: |
-            "${{ github.workspace }}/.data_*.txt"
+            ".data_*.txt"
           key: "results-${{ github.run_id }}-${{ github.run_attempt }}"
 
       - name: Echo collected output
