@@ -16,6 +16,11 @@ jobs:
   #     matrix:
   #       runner: [ubuntu-latest, macos-latest]
 
+  test-things:
+    uses: ./.github/workflows/my-workflow.yaml
+    with:
+      data-list: [string0, string1, string2, string3]
+
   run-things:
     runs-on: ubuntu-latest
     permissions: 

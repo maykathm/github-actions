@@ -1,0 +1,13 @@
+on:
+  workflow_call:
+    inputs:
+      data-list:
+        required: true
+
+jobs:
+  test-things:
+    steps:
+      - name: Read inputs
+        run: |
+          echo "${{ toJSON(inputs.data-list) }}"
+          printf "%s" "${{ toJSON(inputs.data-list) }}"
