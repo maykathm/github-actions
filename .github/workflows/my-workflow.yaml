@@ -1,15 +1,15 @@
 on:
   workflow_call:
     inputs:
-      data-list:
+      runs-on:
         required: true
         type: string
 
 jobs:
   test-things:
-    runs-on: ubuntu-latest
+    runs-on: ${{ toJSON(inputs.runs-on) }}
     steps:
       - name: Read inputs
         run: |
-          echo "${{ toJSON(inputs.data-list) }}"
-          printf "%s" "${{ toJSON(inputs.data-list) }}"
+          echo "${{ toJSON(inputs.runs-on) }}"
+          printf "%s" "${{ toJSON(inputs.runs-on) }}"
