@@ -3,9 +3,11 @@ on:
     inputs:
       data-list:
         required: true
+        type: string
 
 jobs:
   test-things:
+    runs-on: ubuntu-latest
     steps:
       - name: Read inputs
         run: |
