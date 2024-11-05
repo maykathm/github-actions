@@ -7,7 +7,7 @@ on:
 
 jobs:
   test-things:
-    runs-on: ${{ toJSON(inputs.runs-on) }}
+    runs-on: ${{ fromJSON(inputs.runs-on) }}
     steps:
       - name: Read inputs
         run: |
