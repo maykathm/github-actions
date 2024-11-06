@@ -19,19 +19,31 @@ jobs:
         printf "%s" "${{ toJSON(inputs.runs-on) }}"
 
     - name: boolean-var is true
-      if: "${{ fromJSON(inputs.boolean-var) }} == true"
+      if: "${{ inputs.boolean-var }}"
       run: |
-        if [[ ${{ fromJSON(inputs.boolean-var) }} == "true" ]]; then
+        if [ ${{ inputs.boolean-var }} ]; then
           echo "The variable evaluates as true and is ${{ fromJSON(inputs.boolean-var) }}"
         else
           echo "The variable evaluates as false and is ${{ fromJSON(inputs.boolean-var) }}"
         fi
+
+        if [ ${{ !inputs.boolean-var }} ]; then
+          echo "The variable evaluates as false and is ${{ fromJSON(inputs.boolean-var) }}"
+        else
+          echo "The variable evaluates as true and is ${{ fromJSON(inputs.boolean-var) }}"
+        fi
             
     - name: boolean-var is false
-      if: "${{ fromJSON(inputs.boolean-var) }} == false"
+      if: "${{ !inputs.boolean-var }}"
       run: |
-        if [[ ${{ fromJSON(inputs.boolean-var) }} == "true" ]]; then
+        if [ ${{ inputs.boolean-var }} ]; then
           echo "The variable evaluates as true and is ${{ fromJSON(inputs.boolean-var) }}"
         else
           echo "The variable evaluates as false and is ${{ fromJSON(inputs.boolean-var) }}"
+        fi
+
+        if [ ${{ !inputs.boolean-var }} ]; then
+          echo "The variable evaluates as false and is ${{ fromJSON(inputs.boolean-var) }}"
+        else
+          echo "The variable evaluates as true and is ${{ fromJSON(inputs.boolean-var) }}"
         fi
