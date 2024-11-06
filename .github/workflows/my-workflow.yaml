@@ -4,12 +4,34 @@ on:
       runs-on:
         required: true
         type: string
+      boolean-var:
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   test-things:
     runs-on: ${{ fromJSON(inputs.runs-on) }}
     steps:
-      - name: Read inputs
-        run: |
-          echo "${{ toJSON(inputs.runs-on) }}"
-          printf "%s" "${{ toJSON(inputs.runs-on) }}"
+    - name: Read inputs
+      run: |
+        echo "${{ toJSON(inputs.runs-on) }}"
+        printf "%s" "${{ toJSON(inputs.runs-on) }}"
+
+    - name: boolean-var is true
+      if: "${{ fromJSON(inputs.boolean-var) }}"
+      run: |
+        if [ ${{ fromJSON(inputs.boolean-var) }} ]; then
+          echo "The variable evaluates as true and is ${{ fromJSON(inputs.boolean-var) }}"
+        else
+          echo "The variable evaluates as false and is ${{ fromJSON(inputs.boolean-var) }}"
+        fi
+            
+    - name: boolean-var is false
+      if: "!${{ fromJSON(inputs.boolean-var) }}"
+      run: |
+        if [ ${{ fromJSON(inputs.boolean-var) }} ]; then
+          echo "The variable evaluates as true and is ${{ fromJSON(inputs.boolean-var) }}"
+        else
+          echo "The variable evaluates as false and is ${{ fromJSON(inputs.boolean-var) }}"
+        fi
