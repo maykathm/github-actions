@@ -4,34 +4,38 @@ name: cron
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 * * * *'
-    - cron: '1 * * * *'
-    - cron: '2 * * * *'
+    - cron: '10 * * * *'
+    - cron: '11 * * * *'
+    - cron: '12 * * * *'
 
 jobs:
 
   cron-0:
-    if: github.event.schedule == '0 * * * *'
+    runs-on: ubuntu-latest
+    if: github.event.schedule == '10 * * * *'
     steps:
     - name: Cool0!
       run: |
         echo "Cool0!"
 
   cron-1:
-    if: github.event.schedule == '1 * * * *'
+    runs-on: ubuntu-latest
+    if: github.event.schedule == '11 * * * *'
     steps:
     - name: Cool1!
       run: |
         echo "Cool1!"
 
   cron-2:
-    if: github.event.schedule == '2 * * * *'
+    runs-on: ubuntu-latest
+    if: github.event.schedule == '12 * * * *'
     steps:
     - name: Cool2!
       run: |
         echo "Cool2!"
 
   cron-3:
+    runs-on: ubuntu-latest
     steps:
     - name: Super cool
       run: |
