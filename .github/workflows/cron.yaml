@@ -1,0 +1,32 @@
+
+name: Nightly spread executions
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '43 * * * *'
+    - cron: '44 * * * *'
+    - cron: '45 * * * *'
+
+jobs:
+
+  cron-0:
+    if: github.event.schedule == '43 * * * *'
+    steps:
+    - name: Cool0!
+      run: |
+        echo "Cool0!"
+
+  cron-1:
+    if: github.event.schedule == '44 * * * *'
+    steps:
+    - name: Cool1!
+      run: |
+        echo "Cool1!"
+
+  cron-1:
+    if: github.event.schedule == '45 * * * *'
+    steps:
+    - name: Cool1!
+      run: |
+        echo "Cool1!"
