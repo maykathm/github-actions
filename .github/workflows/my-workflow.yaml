@@ -1,6 +1,9 @@
 on:
   workflow_call:
     inputs:
+      other-input:
+        required: true
+        type: string
       runs-on:
         required: true
         type: string
@@ -49,21 +52,21 @@ jobs:
         fi
 
     - name: boolean-var and runner 0
-      if: "${{ !inputs.boolean-var && !endsWith(inputs.runs-on, '-fips') }}"
+      if: "${{ !inputs.boolean-var && !endsWith(inputs.other-input, '-fips') }}"
       run: |
         echo "hello"
 
     - name: boolean-var and runner 1
-      if: "${{ !inputs.boolean-var && !endsWith(inputs.runs-on, '-latest') }}"
+      if: "${{ !inputs.boolean-var && !endsWith(inputs.other-input, 'ings') }}"
       run: |
         echo "hello"
 
     - name: boolean-var and runner 2
-      if: "${{ inputs.boolean-var && !endsWith(inputs.runs-on, '-fips') }}"
+      if: "${{ inputs.boolean-var && !endsWith(inputs.other-input, '-fips') }}"
       run: |
         echo "hello"
 
     - name: boolean-var and runner 3
-      if: "${{ inputs.boolean-var && !endsWith(inputs.runs-on, '-latest') }}"
+      if: "${{ inputs.boolean-var && !endsWith(inputs.other-input, 'ings') }}"
       run: |
         echo "hello"
