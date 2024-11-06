@@ -24,9 +24,9 @@ jobs:
       run: |
         echo "Cool1!"
 
-  cron-1:
+  cron-2:
     if: github.event.schedule == '45 * * * *'
     steps:
-    - name: Cool1!
+    - name: Cool2!
       run: |
-        echo "Cool1!"
+        echo "Cool2!"
