@@ -20,6 +20,7 @@ jobs:
     uses: ./.github/workflows/my-workflow.yaml
     with:
       runs-on: '["ubuntu-latest"]'
+      boolean-var: true
 
   run-things:
     runs-on: ubuntu-latest
