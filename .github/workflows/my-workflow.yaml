@@ -47,3 +47,23 @@ jobs:
         else
           echo "The variable evaluates as true and is ${{ fromJSON(inputs.boolean-var) }}"
         fi
+
+    - name: boolean-var and runner 0
+      if: "${{ !inputs.boolean-var }} && !endsWith(inputs.runs-on, '-fips')"
+      run: |
+        echo "hello"
+
+    - name: boolean-var and runner 1
+      if: "${{ !inputs.boolean-var }} && !endsWith(inputs.runs-on, '-latest')"
+      run: |
+        echo "hello"
+
+    - name: boolean-var and runner 2
+      if: "${{ inputs.boolean-var }} && !endsWith(inputs.runs-on, '-fips')"
+      run: |
+        echo "hello"
+
+    - name: boolean-var and runner 3
+      if: "${{ inputs.boolean-var }} && !endsWith(inputs.runs-on, '-latest')"
+      run: |
+        echo "hello"
