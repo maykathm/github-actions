@@ -19,7 +19,7 @@ jobs:
         printf "%s" "${{ toJSON(inputs.runs-on) }}"
 
     - name: boolean-var is true
-      if: "${{ fromJSON(inputs.boolean-var) }}"
+      if: "${{ fromJSON(inputs.boolean-var) }} == true"
       run: |
         if [[ ${{ fromJSON(inputs.boolean-var) }} == "true" ]]; then
           echo "The variable evaluates as true and is ${{ fromJSON(inputs.boolean-var) }}"
@@ -28,7 +28,7 @@ jobs:
         fi
             
     - name: boolean-var is false
-      if: "!${{ fromJSON(inputs.boolean-var) }}"
+      if: "${{ fromJSON(inputs.boolean-var) }} == false"
       run: |
         if [[ ${{ fromJSON(inputs.boolean-var) }} == "true" ]]; then
           echo "The variable evaluates as true and is ${{ fromJSON(inputs.boolean-var) }}"
