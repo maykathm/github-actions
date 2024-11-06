@@ -21,13 +21,13 @@ jobs:
     - name: boolean-var is true
       if: "${{ inputs.boolean-var }}"
       run: |
-        if [ ${{ inputs.boolean-var }} ]; then
+        if [[ ${{ inputs.boolean-var }} ]]; then
           echo "The variable evaluates as true and is ${{ fromJSON(inputs.boolean-var) }}"
         else
           echo "The variable evaluates as false and is ${{ fromJSON(inputs.boolean-var) }}"
         fi
 
-        if [ ${{ !inputs.boolean-var }} ]; then
+        if [[ ${{ !inputs.boolean-var }} ]]; then
           echo "The variable evaluates as false and is ${{ fromJSON(inputs.boolean-var) }}"
         else
           echo "The variable evaluates as true and is ${{ fromJSON(inputs.boolean-var) }}"
@@ -36,13 +36,13 @@ jobs:
     - name: boolean-var is false
       if: "${{ !inputs.boolean-var }}"
       run: |
-        if [ ${{ inputs.boolean-var }} ]; then
+        if [[ ${{ inputs.boolean-var }} ]]; then
           echo "The variable evaluates as true and is ${{ fromJSON(inputs.boolean-var) }}"
         else
           echo "The variable evaluates as false and is ${{ fromJSON(inputs.boolean-var) }}"
         fi
 
-        if [ ${{ !inputs.boolean-var }} ]; then
+        if [[ ${{ !inputs.boolean-var }} ]]; then
           echo "The variable evaluates as false and is ${{ fromJSON(inputs.boolean-var) }}"
         else
           echo "The variable evaluates as true and is ${{ fromJSON(inputs.boolean-var) }}"
