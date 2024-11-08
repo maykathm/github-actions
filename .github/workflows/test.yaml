@@ -24,7 +24,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
       with:
-        path: "${SRC_DIR}"
+        path: "${{ env.SRC_DIR }}"
     - name: Do things with strings
       uses: ./.github/workflows/actions/strings
       with: 
