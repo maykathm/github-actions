@@ -19,7 +19,7 @@ jobs:
   do-things:
     runs-on: ubuntu-latest
     env:
-      SRC_DIR: "${{ github.workplace }}/src"
+      SRC_DIR: "${{ github.workspace }}/src"
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
