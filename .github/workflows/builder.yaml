@@ -4,12 +4,9 @@ on:
   workflow_call:
     inputs:
       runner:
-        description: 'Tag for runner to use'
+        description: 'Tag for runner to use (i.e. \'\["tag1","tag2"\]\')'
         required: true
-        type: choice
-        options:
-        - 'ubuntu-latest'
-        - 'macos-latest'
+        type: string
 
 
 jobs:
