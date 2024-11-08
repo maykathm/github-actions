@@ -4,8 +4,13 @@ on:
   workflow_call:
     inputs:
       runner:
+        description: 'Tag for runner to use'
         required: true
-        type: string
+        type: choice
+        options:
+        - 'ubuntu-latest'
+        - 'macos-latest'
+
 
 jobs:
   build:

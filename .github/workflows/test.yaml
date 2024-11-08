@@ -8,13 +8,13 @@ on:
   workflow_dispatch:
 
 jobs:
-  # build:
-  #   uses: ./.github/workflows/builder.yaml
-  #   with:
-  #     runner: ${{ matrix.runner }}
-  #   strategy:
-  #     matrix:
-  #       runner: [ubuntu-latest, macos-latest]
+  build:
+    uses: ./.github/workflows/builder.yaml
+    with:
+      runner: ${{ matrix.runner }}
+    strategy:
+      matrix:
+        runner: [ubuntu-latest, macos-latest]
 
   run-things:
     runs-on: ubuntu-latest
