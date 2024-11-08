@@ -26,7 +26,7 @@ jobs:
       with:
         path: "${{ env.SRC_DIR }}"
     - name: Do things with strings
-      uses: "${{ env.SRC_DIR }}/.github/workflows/actions/strings"
+      uses: ${{ env.SRC_DIR }}/.github/workflows/actions/strings
       with: 
         something-extra: dude
     - name: Check file
