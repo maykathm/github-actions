@@ -18,11 +18,13 @@ jobs:
 
   do-things:
     runs-on: ubuntu-latest
+    env:
+      SRC_DIR: "${{ github.workplace }}/src"
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
       with:
-        path: "${{ github.workspace }}"
+        path: "$SRC_DIR"
     - name: Do things with strings
       uses: ./.github/workflows/actions/strings
       with: 
