@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    uses: ./.github/workflows/jobs/builder.yaml
+    uses: ./.github/workflows/builder.yaml
     with:
       runner: ${{ matrix.runner }}
     strategy:
