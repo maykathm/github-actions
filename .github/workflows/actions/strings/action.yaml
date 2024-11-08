@@ -2,7 +2,9 @@ name: 'Cool Strings'
 description: 'Do cool things with strings'
 inputs:
   something-extra:
+    description: 'coolness'
     default: "cool"
+    type: string
 runs:
   using: "composite"
   steps:
