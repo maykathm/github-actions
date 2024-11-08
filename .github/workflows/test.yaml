@@ -25,6 +25,8 @@ jobs:
       uses: ./.github/workflows/actions/strings
       with: 
         something-extra: dude
+    - name: Check file
+      run: cat whatsup
 
   run-things:
     runs-on: ubuntu-latest

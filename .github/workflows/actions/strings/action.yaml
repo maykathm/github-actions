@@ -13,3 +13,11 @@ runs:
     - name: dude
       run: echo "Hello, person. Here's something extra ${{ inputs.something-extra }}"
       shell: bash
+
+    - name: Test access
+      run: echo "base ref is ${{ github.base_ref }} and workspace is ${{ github.workspace }}"
+      shell: bash
+
+    - name: Test touch
+      run: echo "What's up?" > whatsup
+      shell: bash
