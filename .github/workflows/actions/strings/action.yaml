@@ -1,0 +1,13 @@
+name: 'Cool Strings'
+description: 'Do cool things with strings'
+inputs:
+  something-extra:
+    default: "cool"
+runs:
+  using: "composite"
+  steps:
+    - name: Hello
+      run: echo "Hello, world"
+    
+    - name: dude
+      run: echo "Hello, person. Here's something extra ${{ inputs.something-extra }}"

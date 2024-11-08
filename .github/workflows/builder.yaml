@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       runner:
-        description: 'Tag for runner to use (i.e. \'\["tag1","tag2"\]\')'
+        description: 'Tag for runner to use'
         required: true
         type: string
 
