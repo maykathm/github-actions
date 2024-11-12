@@ -44,7 +44,7 @@ jobs:
           artifact_ids=$(gh api /repos/${{ github.repository }}/actions/artifacts | jq -r '.artifacts[] | select(.name|startswith("results-${{ github.run_id }}-${{ github.run_attempt }}-")) | "\(.id)"')
           for artifact_id in $artifact_ids; do 
           echo "planning to delete $artifact_id"; 
-          gh api -X delete /repos/${{ github.repository }}/actions/artifact/$artifact_id
+          gh api -X delete /repos/${{ github.repository }}/actions/artifacts/$artifact_id
           done
 
 
