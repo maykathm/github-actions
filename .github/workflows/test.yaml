@@ -11,6 +11,7 @@ jobs:
   do-things:
     uses: ./.github/workflows/output-generator.yaml
     with:
+      runner-name: "runner-${{ matrix.data }}"
       data: ${{ matrix.data }}
     strategy:
       matrix:
@@ -23,18 +24,27 @@ jobs:
     runs-on: ubuntu-latest
     needs: do-things
     steps:
-      - name: Restore all caches
-        uses: actions/cache/load@v4
+      - name: Download generated data
+        uses: actions/download-artifact@v4
         with:
-          path: |
-            .data_1.txt
-            .data_2.txt
-            .data_3.txt
-          key: "results-${{ github.run_id }}-${{ github.run_attempt }}"
+          path: generated-data
+          pattern: results-${{ github.run_id }}-${{ github.run_attempt }}-*
+          merge-multiple: true
 
       - name: Echo collected output
         run: |
           ls -la "${{ github.workspace }}/"
+          ls -la generated-data
+
+      - name: Delete artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          artifact_ids=$(gh api /repos/${{ github.repository_owner }}/${{ github.repository }}/actions/artifacts | jq -r '.artifacts[] | select(.name|startswith("results-${{ github.run_id }}-${{ github.run_attempt }}-")) | "\(.id)"')
+          for artifact_id in $artifact_ids; do 
+          echo "planning to delete $artifact_id"; 
+          gh api -X delete /repos/${{ github.repository_owner }}/${{ github.repository }}/actions/artifact/$artifact_id
+          done
 
 
   # run-things:
