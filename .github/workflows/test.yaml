@@ -8,6 +8,14 @@ on:
   workflow_dispatch:
 
 jobs:
+  just-because:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4  
+    - name: ls
+      run: ls .
+
   do-things:
     uses: ./.github/workflows/output-generator.yaml
     with:
