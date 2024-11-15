@@ -40,10 +40,10 @@ jobs:
           else
             echo "artifact_name=mac-${postfix}" >> $GITHUB_OUTPUT
           fi
-          echo "NAME=artifact_name=mac-${postfix}" >> $GITHUB_OUTPUT
+          echo "NAME=artifact_name=mac-${postfix}" >> $GITHUB_ENV
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
-          name: "cool-${{ NAME }}"
+          name: "cool-${{ $NAME }}"
           path: hello-world
