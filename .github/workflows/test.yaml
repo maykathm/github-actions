@@ -175,3 +175,4 @@ jobs:
           if ! gh pr comment "${{ github.event.number }}" --body "$(echo -e $body)" --edit-last; then
             gh pr comment "${{ github.event.number }}" --body "$(echo -e $body)"
           fi
+          echo $body >> $GITHUB_STEP_SUMMARY
