@@ -46,15 +46,12 @@ jobs:
       - name: Download generated data
         uses: actions/download-artifact@v4
         with:
-          path: generated-data
           pattern: results-${{ github.run_id }}-${{ github.run_attempt }}-*
-          merge-multiple: true
 
       - name: Echo collected output
         run: |
           ls -la "${{ github.workspace }}/"
-          ls -la generated-data
-          jq -s 'add' generated-data/example-runner* > consolidated-report.json
+          jq -s 'add' results*/*.json > consolidated-report.json
 
           body="$(date)\n"
           body+="## Failures:\n"
