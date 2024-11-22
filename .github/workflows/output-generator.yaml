@@ -12,6 +12,7 @@ on:
 
 jobs:
   do-things:
+    name: ${{ runner-name }}
     runs-on: ubuntu-latest
     steps:
       - name: Get job name
