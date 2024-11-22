@@ -14,7 +14,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4  
     - name: Get job name
-      run: echo "${{ github.jobs }}"
+      run: echo "${{ github.job }}"
     - name: ls
       run: ls .
 
