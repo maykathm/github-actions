@@ -14,6 +14,8 @@ jobs:
   do-things:
     runs-on: ubuntu-latest
     steps:
+      - name: Get job name
+        run: echo "${{ github.job }}"
       - name: Generate Data (1)
         if: ${{ inputs.data == '1' }}
         run: |
