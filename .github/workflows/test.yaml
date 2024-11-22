@@ -19,6 +19,7 @@ jobs:
       run: ls .
 
   do-things:
+    name: "runner-${{ matrix.data }}"
     uses: ./.github/workflows/output-generator.yaml
     with:
       runner-name: "runner-${{ matrix.data }}"
