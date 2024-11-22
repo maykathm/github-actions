@@ -14,6 +14,8 @@ jobs:
   do-things:
     runs-on: ubuntu-latest
     steps:
+      - name: Get job name
+        run: echo "${{ github.jobs[github.job].name }}"
       - name: Generate Data (1)
         if: ${{ inputs.data == '1' }}
         run: |
@@ -85,16 +87,9 @@ jobs:
           }]
           EOF
 
-      # - name: Save spread test results
-      #   if: always()
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: "results-${{ github.run_id }}-${{ github.run_attempt }}-${{ inputs.runner-name }}" 
-      #     path: "example-${{ inputs.runner-name }}.json"
-
-      - name: Upload as cache
+      - name: Save spread test results
         if: always()
-        uses: actions/cache/save@v4
+        uses: actions/upload-artifact@v4
         with:
+          name: "results-${{ github.run_id }}-${{ github.run_attempt }}-${{ inputs.runner-name }}" 
           path: "example-${{ inputs.runner-name }}.json"
-          key: "results-${{ github.run_id }}-${{ github.run_attempt }}-${{ inputs.runner-name }}" 
