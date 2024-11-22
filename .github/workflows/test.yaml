@@ -19,16 +19,17 @@ jobs:
       run: ls .
 
   do-things:
-    name: "runner-${{ matrix.data }}"
+    name: "runner-${{ matrix.group }}"
     uses: ./.github/workflows/output-generator.yaml
     with:
-      runner-name: "runner-${{ matrix.data }}"
-      data: ${{ matrix.data }}
+      runner-name: "runner-${{ matrix.group }}"
+      group: ${{ matrix.group }}
     strategy:
       matrix:
-        data:
-          - 1
-          - 2
+        group:
+          - ubuntu-18
+          - ubuntu-24
+          - nested-ubuntu-24
   
   collect-things:
     runs-on: ubuntu-latest
@@ -41,9 +42,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4  
-
-      - name: Get job name
-        run: echo "${{ github.jobs[github.job].name }}"
 
       - name: Download generated data
         uses: actions/download-artifact@v4
