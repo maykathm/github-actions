@@ -14,14 +14,80 @@ jobs:
   do-things:
     runs-on: ubuntu-latest
     steps:
-      - name: Generate Data
-        id: gen_data
+      - name: Generate Data (1)
+        if: ${{ inputs.data == '1' }}
         run: |
-          echo -n "out=Data generated for ${{ inputs.data }}" > "data_${{ inputs.data }}.txt"
+          cat <<EOF > example-${{ inputs.runner-name }}.json
+          [{
+            "type": "info",
+            "date": "2024-10-11",
+            "time": "09:00:24",
+            "info_type": "Error",
+            "verb": "preparing",
+            "task": "google-core:ubuntu-core-22-64:tests/main/",
+            "extra": null,
+            "detail": {
+              "lines": [
+                "-----\n",
+                ".\n"
+              ]
+            }
+          },
+          {
+            "type": "info",
+            "date": "2024-10-11",
+            "time": "09:01:26",
+            "info_type": "Error",
+            "verb": "preparing",
+            "task": "google-core:ubuntu-core-22-64:tests/regression/",
+            "extra": null,
+            "detail": {
+              "lines": [
+                "-----\n",
+                ".\n"
+              ]
+            }
+          },
+          {
+            "type": "info",
+            "date": "2024-10-11",
+            "time": "09:01:58",
+            "info_type": "Error",
+            "verb": "preparing",
+            "task": "google-core:ubuntu-core-22-64:tests/core/",
+            "extra": null,
+            "detail": {
+              "lines": [
+                "-----\n",
+                ".\n"
+              ]
+            }
+          }]
+          EOF
+      - name: Generate Data (2)
+        if: ${{ inputs.data == '2' }}
+        run: |
+          cat <<EOF > example-${{ inputs.runner-name }}.json
+          [{
+            "type": "info",
+            "date": "2024-10-11",
+            "time": "12:54:02",
+            "info_type": "Error",
+            "verb": "executing",
+            "task": "qemu:ubuntu-24.04-64:tests/main/ack",
+            "extra": null,
+            "detail": {
+              "lines": [
+                "-----\n",
+                ".\n"
+              ]
+            }
+          }]
+          EOF
 
       - name: Save spread test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: "results-${{ github.run_id }}-${{ github.run_attempt }}-${{ inputs.runner-name }}" 
-          path: "data_${{ inputs.data }}.txt"
+          path: "example-${{ inputs.runner-name }}.json"

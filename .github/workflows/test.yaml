@@ -26,7 +26,6 @@ jobs:
         data:
           - 1
           - 2
-          - 3
   
   collect-things:
     runs-on: ubuntu-latest
@@ -47,6 +46,26 @@ jobs:
         run: |
           ls -la "${{ github.workspace }}/"
           ls -la generated-data
+          jq -s 'add' generated-data/example-runner* > consolidated-report.json
+
+          body="$(date)\n"
+          body+="## Failures:\n"
+          if [[ $(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "preparing" )' consolidated-report.json) ]]; then
+            body+="### Prepare:\n"
+            body+=$(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "preparing" ) .task' consolidated-report.json | while read line; do echo "- $line\n"; done)
+          fi
+          if [[ $(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "executing" )' consolidated-report.json) ]]; then
+            body+="### Executing:\n"
+            body+=$(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "executing" ) .task' consolidated-report.json | while read line; do echo "- $line\n"; done)
+          fi
+          if [[ $(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "restoring" )' consolidated-report.json) ]]; then
+            body+="### Restoring:\n"
+            body+=$(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "restoring" ) .task' consolidated-report.json | while read line; do echo "- $line\n"; done)
+          fi
+          if ! gh pr comment "${{ github.event.number }}" --body "$(echo -e $body)" --edit-last; then
+            gh pr comment "${{ github.event.number }}" --body "$(echo -e $body)"
+          fi
+          echo -e "$body" >> $GITHUB_STEP_SUMMARY
 
       - name: Delete artifacts
         run: |
@@ -57,122 +76,122 @@ jobs:
           done
 
 
-  run-things:
-    runs-on: ubuntu-latest
-    permissions: 
-      pull-requests: write
-    strategy:
-      matrix:
-        cool-strings:
-          # - string1
-          - [string2, string3, string4]
-        extra-cool-strings:
-          - string5
-          - string6
-        exclude:
-          - cool-strings: [string2, string3, string4]
-            extra-cool-strings: string5
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+  # run-things:
+  #   runs-on: ubuntu-latest
+  #   permissions: 
+  #     pull-requests: write
+  #   strategy:
+  #     matrix:
+  #       cool-strings:
+  #         # - string1
+  #         - [string2, string3, string4]
+  #       extra-cool-strings:
+  #         - string5
+  #         - string6
+  #       exclude:
+  #         - cool-strings: [string2, string3, string4]
+  #           extra-cool-strings: string5
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
 
-      - name: String Test
-        if: "!endsWith(matrix.cool-strings, '1') || startsWith(matrix.cool-strings, 's')"
-        run: |
-          echo "${{ toJSON(matrix.cool-strings) }}"
-          printf "%s" "${{ toJSON(matrix.cool-strings) }}"
-          grep -q "2" <<<"${{ toJSON(matrix.cool-strings) }}"
+  #     - name: String Test
+  #       if: "!endsWith(matrix.cool-strings, '1') || startsWith(matrix.cool-strings, 's')"
+  #       run: |
+  #         echo "${{ toJSON(matrix.cool-strings) }}"
+  #         printf "%s" "${{ toJSON(matrix.cool-strings) }}"
+  #         grep -q "2" <<<"${{ toJSON(matrix.cecho -e "$body" >> $GITHUB_STEP_SUMMARYool-strings) }}"
 
-      - name: Get PR number
-        if: github.event_name == 'pull_request'
-        run: |
-          echo "PR number is ${{ github.event.number }}"
+  #     - name: Get PR number
+  #       if: github.event_name == 'pull_request'
+  #       run: |
+  #         echo "PR number is ${{ github.event.number }}"
 
-      - name: Comment
-        if: always() && github.event_name == 'pull_request'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          echo "$(gh pr view "${{ github.event.number }}" --comments)"
+  #     - name: Comment
+  #       if: always() && github.event_name == 'pull_request'
+  #       env:
+  #         GH_TOKEN: ${{ github.token }}
+  #       run: |
+  #         echo "$(gh pr view "${{ github.event.number }}" --comments)"
 
-          cat <<EOF > example.json
-          [{
-            "type": "info",
-            "date": "2024-10-11",
-            "time": "09:00:24",
-            "info_type": "Error",
-            "verb": "preparing",
-            "task": "google-core:ubuntu-core-22-64:tests/main/",
-            "extra": null,
-            "detail": {
-              "lines": [
-                "-----\n",
-                ".\n"
-              ]
-            }
-          },
-          {
-            "type": "info",
-            "date": "2024-10-11",
-            "time": "09:01:26",
-            "info_type": "Error",
-            "verb": "preparing",
-            "task": "google-core:ubuntu-core-22-64:tests/regression/",
-            "extra": null,
-            "detail": {
-              "lines": [
-                "-----\n",
-                ".\n"
-              ]
-            }
-          },
-          {
-            "type": "info",
-            "date": "2024-10-11",
-            "time": "09:01:58",
-            "info_type": "Error",
-            "verb": "preparing",
-            "task": "google-core:ubuntu-core-22-64:tests/core/",
-            "extra": null,
-            "detail": {
-              "lines": [
-                "-----\n",
-                ".\n"
-              ]
-            }
-          },
-          {
-            "type": "info",
-            "date": "2024-10-11",
-            "time": "12:54:02",
-            "info_type": "Error",
-            "verb": "executing",
-            "task": "qemu:ubuntu-24.04-64:tests/main/ack",
-            "extra": null,
-            "detail": {
-              "lines": [
-                "-----\n",
-                ".\n"
-              ]
-            }
-          }]
-          EOF
+  #         cat <<EOF > example.json
+  #         [{
+  #           "type": "info",
+  #           "date": "2024-10-11",
+  #           "time": "09:00:24",
+  #           "info_type": "Error",
+  #           "verb": "preparing",
+  #           "task": "google-core:ubuntu-core-22-64:tests/main/",
+  #           "extra": null,
+  #           "detail": {
+  #             "lines": [
+  #               "-----\n",
+  #               ".\n"
+  #             ]
+  #           }
+  #         },
+  #         {
+  #           "type": "info",
+  #           "date": "2024-10-11",
+  #           "time": "09:01:26",
+  #           "info_type": "Error",
+  #           "verb": "preparing",
+  #           "task": "google-core:ubuntu-core-22-64:tests/regression/",
+  #           "extra": null,
+  #           "detail": {
+  #             "lines": [
+  #               "-----\n",
+  #               ".\n"
+  #             ]
+  #           }
+  #         },
+  #         {
+  #           "type": "info",
+  #           "date": "2024-10-11",
+  #           "time": "09:01:58",
+  #           "info_type": "Error",
+  #           "verb": "preparing",
+  #           "task": "google-core:ubuntu-core-22-64:tests/core/",
+  #           "extra": null,
+  #           "detail": {
+  #             "lines": [
+  #               "-----\n",
+  #               ".\n"
+  #             ]
+  #           }
+  #         },
+  #         {
+  #           "type": "info",
+  #           "date": "2024-10-11",
+  #           "time": "12:54:02",
+  #           "info_type": "Error",
+  #           "verb": "executing",
+  #           "task": "qemu:ubuntu-24.04-64:tests/main/ack",
+  #           "extra": null,
+  #           "detail": {
+  #             "lines": [
+  #               "-----\n",
+  #               ".\n"
+  #             ]
+  #           }
+  #         }]
+  #         EOF
 
-          body="$(date)\n"
-          body+="## Failures:\n"
-          if [[ $(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "preparing" )' example.json) ]]; then
-            body+="### Prepare:\n"
-            body+=$(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "preparing" ) .task' example.json | while read line; do echo "- $line\n"; done)
-          fi
-          if [[ $(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "executing" )' example.json) ]]; then
-            body+="### Executing:\n"
-            body+=$(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "executing" ) .task' example.json | while read line; do echo "- $line\n"; done)
-          fi
-          if [[ $(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "restoring" )' example.json) ]]; then
-            body+="### Restoring:\n"
-            body+=$(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "restoring" ) .task' example.json | while read line; do echo "- $line\n"; done)
-          fi
-          if ! gh pr comment "${{ github.event.number }}" --body "$(echo -e $body)" --edit-last; then
-            gh pr comment "${{ github.event.number }}" --body "$(echo -e $body)"
-          fi
-          echo -e "$body" >> $GITHUB_STEP_SUMMARY
+  #         body="$(date)\n"
+  #         body+="## Failures:\n"
+  #         if [[ $(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "preparing" )' example.json) ]]; then
+  #           body+="### Prepare:\n"
+  #           body+=$(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "preparing" ) .task' example.json | while read line; do echo "- $line\n"; done)
+  #         fi
+  #         if [[ $(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "executing" )' example.json) ]]; then
+  #           body+="### Executing:\n"
+  #           body+=$(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "executing" ) .task' example.json | while read line; do echo "- $line\n"; done)
+  #         fi
+  #         if [[ $(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "restoring" )' example.json) ]]; then
+  #           body+="### Restoring:\n"
+  #           body+=$(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "restoring" ) .task' example.json | while read line; do echo "- $line\n"; done)
+  #         fi
+  #         if ! gh pr comment "${{ github.event.number }}" --body "$(echo -e $body)" --edit-last; then
+  #           gh pr comment "${{ github.event.number }}" --body "$(echo -e $body)"
+  #         fi
+  #         echo -e "$body" >> $GITHUB_STEP_SUMMARY
