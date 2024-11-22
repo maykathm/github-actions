@@ -50,7 +50,7 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: "example-*.json"
-          pattern: results-${{ github.run_id }}-${{ github.run_attempt }}-*
+          key: results-${{ github.run_id }}-${{ github.run_attempt }}-*
           # merge-multiple: true
 
       - name: Echo collected output
