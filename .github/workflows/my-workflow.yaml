@@ -12,7 +12,7 @@ on:
         type: boolean
         default: false
 
-run-name: "bob"
+name: "bob"
 
 jobs:
   test-things:
