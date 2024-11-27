@@ -31,54 +31,54 @@ jobs:
           - ubuntu-24
           - nested-ubuntu-24
   
-  collect-things:
-    runs-on: ubuntu-latest
-    needs: do-things
-    permissions: 
-      actions: write
-      pull-requests: write
-    env:
-          GH_TOKEN: ${{ github.token }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4  
+  # collect-things:
+  #   runs-on: ubuntu-latest
+  #   needs: do-things
+  #   permissions: 
+  #     actions: write
+  #     pull-requests: write
+  #   env:
+  #         GH_TOKEN: ${{ github.token }}
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4  
 
-      - name: Download generated data
-        uses: actions/download-artifact@v4
-        with:
-          pattern: results-${{ github.run_id }}-${{ github.run_attempt }}-*
+  #     - name: Download generated data
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         pattern: results-${{ github.run_id }}-${{ github.run_attempt }}-*
 
-      - name: Echo collected output
-        run: |
-          ls -la "${{ github.workspace }}/"
-          jq -s 'add' results*/*.json > consolidated-report.json
+  #     - name: Echo collected output
+  #       run: |
+  #         ls -la "${{ github.workspace }}/"
+  #         jq -s 'add' results*/*.json > consolidated-report.json
 
-          body="$(date)\n"
-          body+="## Failures:\n"
-          if [[ $(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "preparing" )' consolidated-report.json) ]]; then
-            body+="### Prepare:\n"
-            body+=$(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "preparing" ) .task' consolidated-report.json | while read line; do echo "- $line\n"; done)
-          fi
-          if [[ $(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "executing" )' consolidated-report.json) ]]; then
-            body+="### Executing:\n"
-            body+=$(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "executing" ) .task' consolidated-report.json | while read line; do echo "- $line\n"; done)
-          fi
-          if [[ $(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "restoring" )' consolidated-report.json) ]]; then
-            body+="### Restoring:\n"
-            body+=$(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "restoring" ) .task' consolidated-report.json | while read line; do echo "- $line\n"; done)
-          fi
-          if ! gh pr comment "${{ github.event.number }}" --body "$(echo -e $body)" --edit-last; then
-            gh pr comment "${{ github.event.number }}" --body "$(echo -e $body)"
-          fi
-          echo -e "$body" >> $GITHUB_STEP_SUMMARY
+  #         body="$(date)\n"
+  #         body+="## Failures:\n"
+  #         if [[ $(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "preparing" )' consolidated-report.json) ]]; then
+  #           body+="### Prepare:\n"
+  #           body+=$(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "preparing" ) .task' consolidated-report.json | while read line; do echo "- $line\n"; done)
+  #         fi
+  #         if [[ $(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "executing" )' consolidated-report.json) ]]; then
+  #           body+="### Executing:\n"
+  #           body+=$(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "executing" ) .task' consolidated-report.json | while read line; do echo "- $line\n"; done)
+  #         fi
+  #         if [[ $(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "restoring" )' consolidated-report.json) ]]; then
+  #           body+="### Restoring:\n"
+  #           body+=$(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "restoring" ) .task' consolidated-report.json | while read line; do echo "- $line\n"; done)
+  #         fi
+  #         if ! gh pr comment "${{ github.event.number }}" --body "$(echo -e $body)" --edit-last; then
+  #           gh pr comment "${{ github.event.number }}" --body "$(echo -e $body)"
+  #         fi
+  #         echo -e "$body" >> $GITHUB_STEP_SUMMARY
 
-      - name: Delete artifacts
-        run: |
-          artifact_ids=$(gh api /repos/${{ github.repository }}/actions/artifacts | jq -r '.artifacts[] | select(.name|startswith("results-${{ github.run_id }}-${{ github.run_attempt }}-")) | "\(.id)"')
-          for artifact_id in $artifact_ids; do 
-          echo "planning to delete $artifact_id"; 
-          gh api -X delete /repos/${{ github.repository }}/actions/artifacts/$artifact_id
-          done
+  #     - name: Delete artifacts
+  #       run: |
+  #         artifact_ids=$(gh api /repos/${{ github.repository }}/actions/artifacts | jq -r '.artifacts[] | select(.name|startswith("results-${{ github.run_id }}-${{ github.run_attempt }}-")) | "\(.id)"')
+  #         for artifact_id in $artifact_ids; do 
+  #         echo "planning to delete $artifact_id"; 
+  #         gh api -X delete /repos/${{ github.repository }}/actions/artifacts/$artifact_id
+  #         done
 
 
   # run-things:
