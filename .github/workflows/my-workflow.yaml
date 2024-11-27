@@ -14,7 +14,8 @@ on:
 
 jobs:
   test-things:
-    name: "bob${{ inputs.boolean-var && ' with-bool-var' || '' }}"
+    name: "bob${{ inputs.boolean-var && ' with-bool-var' || '' }}
+          and more"
     runs-on: ${{ fromJSON(inputs.runs-on) }}
     steps:
     - name: Read inputs
