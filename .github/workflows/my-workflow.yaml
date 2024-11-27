@@ -12,8 +12,6 @@ on:
         type: boolean
         default: false
 
-run-name: "${{ inputs.other-input }}${{ inputs.boolean-var && ' with-bool-var' }}"
-
 jobs:
   test-things:
     runs-on: ${{ fromJSON(inputs.runs-on) }}

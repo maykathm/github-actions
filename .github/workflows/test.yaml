@@ -18,6 +18,7 @@ jobs:
 
   test-things:
     uses: ./.github/workflows/my-workflow.yaml
+    name: "${{ inputs.other-input }}${{ inputs.boolean-var && ' with-bool-var' }}"
     with:
       runs-on: '["ubuntu-latest"]'
       boolean-var: true
