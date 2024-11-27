@@ -1,0 +1,77 @@
+name: Tests results commenter
+
+on:
+  workflow_run:
+    workflows: [Tests]
+    types:
+      - completed
+
+jobs:
+  report-spread-results:
+    runs-on: ubuntu-latest
+    permissions: 
+      actions: write
+      pull-requests: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4  
+
+      - name: Get generated data
+        uses: actions/github-script@v6
+        with:
+          script: |
+            let allArtifacts = await github.rest.actions.listWorkflowRunArtifacts({
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+               run_id: context.payload.workflow_run.id,
+            });
+            let matchingArtifacts = allArtifacts.data.artifacts.filter((artifact) => {
+              return artifact.name.startsWith(`results-${context.payload.workflow_run.id}-${context.payload.workflow_run.attempt}`);
+            });
+            for (let artifact of matchingArtifacts) {
+              let download = await github.rest.actions.downloadArtifact({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                artifact_id: artifact.id,
+                archive_format: 'zip',
+              });
+              let fs = require('fs');
+              fs.writeFileSync(`${process.env.GITHUB_WORKSPACE}/${artifact.name}.zip`, Buffer.from(download.data));
+            }
+
+      - name: Echo collected output
+        run: |
+          ls -la "${{ github.workspace }}/"
+          ls *.zip | while read filename; do unzip $filename; done
+          jq -s 'add' results*/*.json > consolidated-report.json
+
+          body="$(date)\n"
+          body+="## Failures:\n"
+          if [[ $(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "preparing" )' consolidated-report.json) ]]; then
+            body+="### Prepare:\n"
+            body+=$(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "preparing" ) .task' consolidated-report.json | while read line; do echo "- $line\n"; done)
+          fi
+          if [[ $(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "executing" )' consolidated-report.json) ]]; then
+            body+="### Executing:\n"
+            body+=$(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "executing" ) .task' consolidated-report.json | while read line; do echo "- $line\n"; done)
+          fi
+          if [[ $(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "restoring" )' consolidated-report.json) ]]; then
+            body+="### Restoring:\n"
+            body+=$(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "restoring" ) .task' consolidated-report.json | while read line; do echo "- $line\n"; done)
+          fi
+          if [ -n "${{ github.event.number }}" ]; then
+            if ! gh pr comment "${{ github.event.number }}" --body "$(echo -e $body)" --edit-last; then
+              gh pr comment "${{ github.event.number }}" --body "$(echo -e $body)"
+            fi
+          fi
+          echo -e "$body" >> $GITHUB_STEP_SUMMARY
+
+      - name: Delete artifacts
+        run: |
+          artifact_ids=$(gh api /repos/${{ github.repository }}/actions/artifacts | jq -r '.artifacts[] | select(.name|startswith("results-${{ github.event.workflow_run.id }}-${ github.event.workflow_run.attempt }-")) | "\(.id)"')
+          for artifact_id in $artifact_ids; do 
+          echo "planning to delete $artifact_id"; 
+          gh api -X delete /repos/${{ github.repository }}/actions/artifacts/$artifact_id
+          done
