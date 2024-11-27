@@ -75,9 +75,11 @@ jobs:
             fi
           fi
           echo -e "$report" > report
+          echo ${{ github.event.workflow_run }}
+          echo ${{ github.event.workflow_run.pull_requests }}
 
       - name: Comment report to PR
-        if: ${{ github.event.number }}
+        if: ${{ github.event.workflow_run.pull_requests }}
         run: |
           if ! gh pr comment "${{ github.event.number }}" --body "$(cat report)" --edit-last; then
             gh pr comment "${{ github.event.number }}" --body "$(cat report)"
@@ -89,7 +91,7 @@ jobs:
 
       - name: Delete artifacts
         run: |
-          artifact_ids=$(gh api /repos/${{ github.repository }}/actions/artifacts | jq -r '.artifacts[] | select(.name|startswith("results-${{ github.event.workflow_run.id }}-${ github.event.workflow_run.run_attempt }-")) | "\(.id)"')
+          artifact_ids=$(gh api /repos/${{ github.repository }}/actions/artifacts | jq -r '.artifacts[] | select(.name|startswith("results-${{ github.event.workflow_run.id }}-${{ github.event.workflow_run.run_attempt }}-")) | "\(.id)"')
           for artifact_id in $artifact_ids; do 
           echo "planning to delete $artifact_id"; 
           gh api -X delete /repos/${{ github.repository }}/actions/artifacts/$artifact_id
