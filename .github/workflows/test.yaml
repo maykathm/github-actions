@@ -21,7 +21,6 @@ jobs:
     with:
       runs-on: '["ubuntu-latest"]'
       boolean-var: true
-      other-input: things
   
   test-false-things:
     uses: ./.github/workflows/my-workflow.yaml
