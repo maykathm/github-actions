@@ -18,6 +18,7 @@ jobs:
 
   test-things:
     uses: ./.github/workflows/my-workflow.yaml
+    name: "bob${{ inputs.boolean-var && ' with-bool-var' }}"
     with:
       runs-on: '["ubuntu-latest"]'
       boolean-var: true
@@ -25,6 +26,7 @@ jobs:
   
   test-false-things:
     uses: ./.github/workflows/my-workflow.yaml
+    name: "bob${{ inputs.boolean-var && ' with-bool-var' }}"
     with:
       runs-on: '["ubuntu-latest"]'
       other-input: things
