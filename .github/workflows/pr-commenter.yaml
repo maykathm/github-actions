@@ -28,9 +28,9 @@ jobs:
                run_id: context.payload.workflow_run.id,
             });
             console.log("All artifacts found:", allArtifacts.data.artifacts);
-            console.log("Things to match are: ", `results-${context.payload.workflow_run.id}-${context.payload.workflow_run.attempt}`);
+            console.log("Things to match are: ", `results-${context.payload.workflow_run.id}-${context.payload.workflow_run.run_attempt}`);
             let matchingArtifacts = allArtifacts.data.artifacts.filter((artifact) => {
-              return artifact.name.startsWith(`results-${context.payload.workflow_run.id}-${context.payload.workflow_run.attempt}`);
+              return artifact.name.startsWith(`results-${context.payload.workflow_run.id}-${context.payload.workflow_run.run_attempt}`);
             });
             console.log("Matching artifacts:", matchingArtifacts);
             for (let artifact of matchingArtifacts) {
@@ -85,7 +85,7 @@ jobs:
 
       - name: Delete artifacts
         run: |
-          artifact_ids=$(gh api /repos/${{ github.repository }}/actions/artifacts | jq -r '.artifacts[] | select(.name|startswith("results-${{ github.event.workflow_run.id }}-${ github.event.workflow_run.attempt }-")) | "\(.id)"')
+          artifact_ids=$(gh api /repos/${{ github.repository }}/actions/artifacts | jq -r '.artifacts[] | select(.name|startswith("results-${{ github.event.workflow_run.id }}-${ github.event.workflow_run.run_attempt }-")) | "\(.id)"')
           for artifact_id in $artifact_ids; do 
           echo "planning to delete $artifact_id"; 
           gh api -X delete /repos/${{ github.repository }}/actions/artifacts/$artifact_id
