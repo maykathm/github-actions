@@ -48,7 +48,11 @@ jobs:
       - name: Echo collected output
         run: |
           ls -la .
-          find . -name "*.zip" | while read filename; do unzip $filename; done
+          find . -name "*.zip" | while read filename; do 
+            dir="${filename%.zip}"
+            mkdir $dir
+            unzip $filename -d $dir
+          done
 
           report="$(date)\n"
           if ! ls results-*/*.json &> /dev/null; then
