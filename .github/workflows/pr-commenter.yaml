@@ -27,9 +27,11 @@ jobs:
                repo: context.repo.repo,
                run_id: context.payload.workflow_run.id,
             });
+            console.log("All artifacts found:", allArtifacts.data.artifacts);
             let matchingArtifacts = allArtifacts.data.artifacts.filter((artifact) => {
               return artifact.name.startsWith(`results-${context.payload.workflow_run.id}-${context.payload.workflow_run.attempt}`);
             });
+            console.log("Matching artifacts:", matchingArtifacts);
             for (let artifact of matchingArtifacts) {
               let download = await github.rest.actions.downloadArtifact({
                 owner: context.repo.owner,
@@ -39,34 +41,46 @@ jobs:
               });
               let fs = require('fs');
               fs.writeFileSync(`${process.env.GITHUB_WORKSPACE}/${artifact.name}.zip`, Buffer.from(download.data));
+              console.log(`Downloaded artifact: ${artifact.name}.zip`);
             }
 
       - name: Echo collected output
         run: |
-          ls -la "${{ github.workspace }}/"
-          ls *.zip | while read filename; do unzip $filename; done
-          jq -s 'add' results*/*.json > consolidated-report.json
+          ls -la .
+          find . -name "*.zip" | while read filename; do unzip $filename; done
 
-          body="$(date)\n"
-          body+="## Failures:\n"
-          if [[ $(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "preparing" )' consolidated-report.json) ]]; then
-            body+="### Prepare:\n"
-            body+=$(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "preparing" ) .task' consolidated-report.json | while read line; do echo "- $line\n"; done)
-          fi
-          if [[ $(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "executing" )' consolidated-report.json) ]]; then
-            body+="### Executing:\n"
-            body+=$(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "executing" ) .task' consolidated-report.json | while read line; do echo "- $line\n"; done)
-          fi
-          if [[ $(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "restoring" )' consolidated-report.json) ]]; then
-            body+="### Restoring:\n"
-            body+=$(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "restoring" ) .task' consolidated-report.json | while read line; do echo "- $line\n"; done)
-          fi
-          if [ -n "${{ github.event.number }}" ]; then
-            if ! gh pr comment "${{ github.event.number }}" --body "$(echo -e $body)" --edit-last; then
-              gh pr comment "${{ github.event.number }}" --body "$(echo -e $body)"
+          report="$(date)\n"
+          if ! ls results-*/*.json &> /dev/null; then
+            report+="## No spread failures"
+          else
+            jq -s 'add' results*/*.json > consolidated-report.json
+
+            report+="## Failures:\n"
+            if [[ $(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "preparing" )' consolidated-report.json) ]]; then
+              report+="### Prepare:\n"
+              report+=$(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "preparing" ) .task' consolidated-report.json | while read line; do echo "- $line\n"; done)
+            fi
+            if [[ $(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "executing" )' consolidated-report.json) ]]; then
+              report+="### Executing:\n"
+              report+=$(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "executing" ) .task' consolidated-report.json | while read line; do echo "- $line\n"; done)
+            fi
+            if [[ $(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "restoring" )' consolidated-report.json) ]]; then
+              report+="### Restoring:\n"
+              report+=$(jq -r '.[] | select( .info_type == "Error" ) | select( .verb == "restoring" ) .task' consolidated-report.json | while read line; do echo "- $line\n"; done)
             fi
           fi
-          echo -e "$body" >> $GITHUB_STEP_SUMMARY
+          echo -e "$report" > report
+
+      - name: Comment report to PR
+        if: ${{ github.event.number }}
+        run: |
+          if ! gh pr comment "${{ github.event.number }}" --body "$(cat report)" --edit-last; then
+            gh pr comment "${{ github.event.number }}" --body "$(cat report)"
+          fi
+      
+      - name: Write report to test summary
+        run: cat report >> $GITHUB_STEP_SUMMARY
+
 
       - name: Delete artifacts
         run: |
