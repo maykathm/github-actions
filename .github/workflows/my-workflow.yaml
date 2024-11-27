@@ -12,6 +12,8 @@ on:
         type: boolean
         default: false
 
+run-name: "bob"
+
 jobs:
   test-things:
     runs-on: ${{ fromJSON(inputs.runs-on) }}
