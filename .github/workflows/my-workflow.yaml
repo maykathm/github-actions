@@ -16,7 +16,7 @@ jobs:
   test-things:
     name: "bob${{ inputs.boolean-var && ' with-bool-var' || '' }}
           and more
-          ${{ inputs.other-input != '' && ' inputs.other-input' || '' }}
+          ${{ inputs.other-input != '' && " inputs.other-input" || '' }}
           stuff"
     runs-on: ${{ fromJSON(inputs.runs-on) }}
     steps:
