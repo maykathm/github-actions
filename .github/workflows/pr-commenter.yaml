@@ -15,9 +15,6 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4  
-
       - name: Get generated data
         if: ${{ github.event.workflow_run.pull_requests[0] }}
         uses: actions/github-script@v6
