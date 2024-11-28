@@ -8,6 +8,7 @@ on:
 
 jobs:
   report-spread-results:
+    if: ${{ github.event.workflow_run.pull_requests[0] }}
     runs-on: ubuntu-latest
     permissions: 
       actions: write
@@ -16,11 +17,9 @@ jobs:
       GH_TOKEN: ${{ github.token }}
     steps:
       - name: Checkout code
-        if: ${{ github.event.workflow_run.pull_requests[0] }}
         uses: actions/checkout@v4  
         
       - name: Get generated data
-        if: ${{ github.event.workflow_run.pull_requests[0] }}
         uses: actions/github-script@v6
         with:
           script: |
@@ -45,7 +44,6 @@ jobs:
             }
 
       - name: Echo collected output
-        if: ${{ github.event.workflow_run.pull_requests[0] }}
         run: |
           ls -la .
           find . -name "results-${{ github.event.workflow_run.id }}*.zip" | while read filename; do 
@@ -77,7 +75,6 @@ jobs:
           echo -e "$report" > report
 
       - name: Comment report to PR
-        if: ${{ github.event.workflow_run.pull_requests[0] }}
         run: |
           IFS=$'\n' read -d '' -r -a pull_requests < <(echo '${{ toJson(github.event.workflow_run.pull_requests) }}' | jq -r '.[] | .number' && printf '\0')
           for pr_number in "${pull_requests[@]}"; do
