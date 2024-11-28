@@ -19,6 +19,7 @@ jobs:
         uses: actions/checkout@v4  
 
       - name: Get generated data
+        if: ${{ github.event.workflow_run.pull_requests[0] }}
         uses: actions/github-script@v6
         with:
           script: |
@@ -43,6 +44,7 @@ jobs:
             }
 
       - name: Echo collected output
+        if: ${{ github.event.workflow_run.pull_requests[0] }}
         run: |
           ls -la .
           find . -name "*.zip" | while read filename; do 
@@ -73,6 +75,12 @@ jobs:
           fi
           echo -e "$report" > report
 
+      - name: Check for multiple PRs
+        if: ${{ github.event.workflow_run.pull_requests[1] }}
+        run: |
+          echo "There are multiple pull requests associated with this workflow run."
+          exit 1
+
       - name: Comment report to PR
         if: ${{ github.event.workflow_run.pull_requests[0] }}
         run: |
@@ -81,6 +89,7 @@ jobs:
           fi
 
       - name: Delete artifacts
+        if: always()
         run: |
           artifact_ids=$(gh api /repos/${{ github.repository }}/actions/artifacts | jq -r '.artifacts[] | select(.name|startswith("results-${{ github.event.workflow_run.id }}-${{ github.event.workflow_run.run_attempt }}-")) | "\(.id)"')
           for artifact_id in $artifact_ids; do 
