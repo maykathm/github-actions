@@ -25,8 +25,7 @@ jobs:
 
     - name: Print job name
       run: |
-        echo "${{ github.job }}"
-        echo ${{ github.jobs[$GITHUB_JOB].name }}
+        jq . <<<"${{ toJson(github) }}"
 
     - name: boolean-var is true
       if: "${{ inputs.boolean-var }}"
