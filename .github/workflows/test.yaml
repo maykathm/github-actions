@@ -16,13 +16,13 @@ jobs:
   #     matrix:
   #       runner: [ubuntu-latest, macos-latest]
 
-  test-things:
+  testing-things:
     uses: ./.github/workflows/my-workflow.yaml
     with:
       runs-on: '["ubuntu-latest"]'
       boolean-var: true
   
-  test-false-things:
+  testing-false-things:
     uses: ./.github/workflows/my-workflow.yaml
     with:
       runs-on: '["ubuntu-latest"]'
