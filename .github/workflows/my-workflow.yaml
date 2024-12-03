@@ -15,6 +15,23 @@ on:
         required: false
         type: boolean
         default: false
+      channel:
+        required: true
+        type: string
+      go-build-tags:
+        description: 'Tag to add to go test'
+        type: string
+        required: false
+      go-test-race:
+        description: 'If true, will add race tag to go test'
+        type: boolean
+        default: false
+        required: false
+      snapd-debug:
+        description: 'If true, will set SNAPD_DEBUG=1'
+        type: boolean
+        default: false
+        required: false
 
 jobs:
   test-things:
@@ -89,14 +106,14 @@ jobs:
       run: |
         echo "hello" > world
 
-    - name: Change slash
+    - name: Create coverage results name
       run: |
-        original='latest/stable'
-        new=$(sed 's/\//-/g' <<<$original)
-        echo "new=$new" >> $GITHUB_ENV
+        converted=$(sed 's/\//-/g' <<<${{ inputs.channel }})
+        name="coverage-files-${converted}-${{ inputs.go-build-tags || 'notags' }}${{ inputs.go-test-race && '-race' || ''}}${{ inputs.snapd-debug && '-snapddebug' || ''}}"
+        echo "COVERAGE_NAME=$name" >> $GITHUB_ENV
 
     - name: Upload
       uses: actions/upload-artifact@v4
       with:
-        name: "${{ env.new }}"
+        name: "${{ env.COVERAGE_NAME }}"
         path: "${{ github.workspace }}/world"

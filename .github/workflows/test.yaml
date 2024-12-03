@@ -22,12 +22,14 @@ jobs:
       runs-on: '["ubuntu-latest"]'
       boolean-var: true
       is-fund: true
+      channel: 'latest/stable'
   
   testing-false-things:
     uses: ./.github/workflows/my-workflow.yaml
     with:
       runs-on: '["ubuntu-latest"]'
       other-input: things
+      channel: '1.18/stable'
 
   run-things:
     runs-on: ubuntu-latest
