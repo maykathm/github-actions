@@ -57,7 +57,8 @@ jobs:
         GH_TOKEN: ${{ github.token }}
       run: |
         rules=$(gh api repos/${{ github.repository }}/rules/branches/master)
-        jq . <<<$rules
+        jq -r '.[] | select(.type=="required_status_checks") | (.parameters.required_status_checks[] | .context)' <<<$rules
+        
 
 
     - name: boolean-var is true
@@ -123,5 +124,5 @@ jobs:
     - name: Upload
       uses: actions/upload-artifact@v4
       with:
-        name: "${{ env.COVERAGE_NAME }}"
+        name: "${{ env.COVERAGE_NAME }} (test)"
         path: "${{ github.workspace }}/world"
