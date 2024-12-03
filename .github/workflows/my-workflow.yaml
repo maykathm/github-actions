@@ -84,3 +84,13 @@ jobs:
       if: "${{ inputs.boolean-var && !endsWith(inputs.other-input, 'ings') }}"
       run: |
         echo "hello"
+
+    - name: create file
+      run: |
+        echo "hello" > world
+
+    - name: Upload
+      uses: actions/upload-artifact@v4
+      with:
+        name: "hello/world"
+        path: "${{ github.workspace }}/world"
