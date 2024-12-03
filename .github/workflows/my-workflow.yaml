@@ -29,7 +29,7 @@ jobs:
 
     - name: Print job name
       run: |
-        jq . <<<"${{ toJson(github) }}"
+        # jq . <<<"${{ toJson(github) }}"
         fundamental=""
         if [ "${{ inputs.is-fund }}" == 'true' ]; then
           fundamental="#fundamental"
