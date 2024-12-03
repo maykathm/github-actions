@@ -89,8 +89,14 @@ jobs:
       run: |
         echo "hello" > world
 
+    - name: Change slash
+      run: |
+        original='latest/stable'
+        new=$(sed 's/\//-/g' <<<$original)
+        echo "new=$new" >> $GITHUB_ENV
+
     - name: Upload
       uses: actions/upload-artifact@v4
       with:
-        name: "hello/world"
+        name: "$new"
         path: "${{ github.workspace }}/world"
